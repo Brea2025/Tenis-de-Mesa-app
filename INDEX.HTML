@@ -1,0 +1,1336 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>🏓 Tenis de Mesa Pro - Círcolo Campano</title>
+    <style>
+        /* --- RESET Y ESTILOS BASE --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, system-ui, sans-serif; }
+        body { background: #0d1b2a; color: #e0e1dd; min-height: 100vh; display: flex; justify-content: center; padding: 12px; }
+        .app-container { max-width: 820px; width: 100%; background: #1b263b; border-radius: 32px; padding: 20px 16px 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.7); border: 1px solid #415a77; }
+
+        /* --- HEADER CON LOGO --- */
+        .header {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 8px;
+            border-bottom: 1px solid #415a77;
+            padding-bottom: 12px;
+        }
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .header-logo {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: 2px solid #fca311;
+            object-fit: contain;
+            background: #fff;
+            padding: 4px;
+            flex-shrink: 0;
+        }
+        .header-text h1 {
+            font-size: 1.7rem;
+            color: #fca311;
+            text-shadow: 0 2px 4px rgba(252,163,17,0.3);
+            line-height: 1.2;
+        }
+        .header-text small {
+            color: #778da9;
+            font-size: 0.8rem;
+            display: block;
+        }
+        .header-controls {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+        }
+        .header-controls input {
+            background: #0d1b2a;
+            border: 1px solid #415a77;
+            color: #fff;
+            padding: 6px 12px;
+            border-radius: 30px;
+            width: 120px;
+            font-size: 0.85rem;
+        }
+        .header-controls input::placeholder { color: #778da9; }
+        .icon-btn {
+            background: #0d1b2a;
+            border: 2px solid #415a77;
+            color: #e0e1dd;
+            padding: 6px 12px;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            white-space: nowrap;
+        }
+        .icon-btn:hover { background: #415a77; }
+        .icon-btn.active-btn { background: #fca311; border-color: #fca311; color: #0d1b2a; }
+        .mute-btn { font-size: 1.2rem; padding: 6px 12px; }
+
+        /* --- BANNER DE SEMANA --- */
+        .week-banner { background: linear-gradient(135deg, #1b263b, #0d1b2a); border: 2px solid #fca311; border-radius: 16px; padding: 10px 16px; margin: 12px 0 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
+        .week-banner .week-tag { background: #fca311; color: #0d1b2a; font-weight: 800; padding: 4px 16px; border-radius: 30px; font-size: 0.85rem; letter-spacing: 1px; }
+        .week-banner .week-desc { color: #e0e1dd; font-weight: 600; font-size: 1rem; }
+        .week-banner .week-desc span { color: #fca311; }
+        .level-badge { background: #2d6a4f; color: #fff; padding: 2px 14px; border-radius: 30px; font-size: 0.8rem; font-weight: 700; }
+        .level-badge.beginner { background: #e76f51; }
+        .level-badge.intermediate { background: #f4a261; }
+        .level-badge.advanced { background: #2a9d8f; }
+
+        /* --- MENSAJE DEL ENTRENADOR --- */
+        .coach-message-block {
+            background: #1b263b;
+            border: 2px solid #fca311;
+            border-radius: 16px;
+            padding: 14px 16px;
+            margin: 12px 0;
+        }
+        .coach-message-block h4 { color: #fca311; margin-bottom: 4px; font-size: 0.95rem; display: flex; align-items: center; gap: 8px; }
+        .coach-message-block p { color: #e0e1dd; font-style: italic; line-height: 1.5; margin: 0; }
+
+        /* --- TABS --- */
+        .tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 18px; justify-content: center; }
+        .tab-btn { background: #0d1b2a; border: 2px solid #415a77; color: #e0e1dd; padding: 8px 12px; border-radius: 50px; font-weight: 600; font-size: 0.75rem; cursor: pointer; transition: all 0.25s ease; flex: 1 0 auto; min-width: 50px; text-align: center; }
+        .tab-btn.active { background: #fca311; border-color: #fca311; color: #0d1b2a; box-shadow: 0 0 15px rgba(252,163,17,0.4); }
+        .tab-btn.disabled { opacity: 0.4; cursor: not-allowed; pointer-events: none; }
+
+        /* --- CONTENIDO DÍA --- */
+        .day-content { display: none; animation: fadeIn 0.3s ease; }
+        .day-content.active { display: block; }
+        @keyframes fadeIn { 0% { opacity: 0; transform: translateY(8px); } 100% { opacity: 1; transform: translateY(0); } }
+        .day-badge { display: inline-block; background: #fca311; color: #0d1b2a; padding: 2px 16px; border-radius: 20px; font-weight: 700; font-size: 0.75rem; letter-spacing: 1px; margin-bottom: 6px; }
+        .day-title { font-size: 1.5rem; font-weight: 700; line-height: 1.2; }
+        .day-sub { color: #778da9; margin-bottom: 14px; font-style: italic; font-size: 0.95rem; }
+        .section-card { background: #0d1b2a; border-radius: 16px; padding: 14px 16px; margin-bottom: 14px; border-left: 5px solid #fca311; }
+        .section-card h3 { color: #fca311; font-size: 1.05rem; margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
+        .section-card p, .section-card li { line-height: 1.5; color: #d4d9e3; font-size: 0.95rem; white-space: pre-line; }
+        .section-card ul { padding-left: 18px; }
+        .section-card li { list-style-type: '🏓 '; padding-left: 6px; margin-bottom: 2px; }
+        .nutrition-tip { background: #1b263b; border-radius: 12px; padding: 12px 14px; border: 1px dashed #fca311; display: flex; gap: 12px; align-items: flex-start; }
+        .nutrition-tip span { font-size: 1.6rem; }
+        .nutrition-tip p { margin: 0; color: #e0e1dd; line-height: 1.5; }
+        .nutrition-tip strong { color: #fca311; }
+
+        /* --- ESTILO PARA LA IMAGEN DEL BURPEE --- */
+        .burpee-img-container {
+            text-align: center;
+            margin: 10px 0;
+        }
+        .burpee-img-container img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 16px;
+            border: 3px solid #fca311;
+            box-shadow: 0 4px 20px rgba(252, 163, 17, 0.3);
+            background: #fff;
+            padding: 4px;
+        }
+        .burpee-img-container .caption {
+            color: #778da9;
+            font-size: 0.8rem;
+            margin-top: 6px;
+            font-weight: 500;
+        }
+        .burpee-img-container .caption strong {
+            color: #fca311;
+        }
+
+        /* --- DIAGNÓSTICO --- */
+        .diagnostic-form { background: #1b263b; border-radius: 16px; padding: 18px 16px; margin: 12px 0; border: 2px solid #2a9d8f; }
+        .diagnostic-form label { display: block; font-weight: 600; margin-bottom: 4px; color: #e0e1dd; }
+        .diagnostic-form input, .diagnostic-form select, .diagnostic-form textarea { width: 100%; padding: 10px 14px; border-radius: 12px; background: #0d1b2a; border: 1px solid #415a77; color: #fff; font-size: 1rem; margin-bottom: 12px; }
+        .diagnostic-form .hint { font-size: 0.85rem; color: #778da9; margin-top: -8px; margin-bottom: 12px; line-height: 1.5; }
+        .diagnostic-form .hint strong { color: #fca311; }
+        .diagnostic-result { background: #0d1b2a; padding: 12px; border-radius: 12px; border-left: 5px solid #fca311; margin-top: 10px; }
+
+        /* --- NOTAS Y CONFUCIO --- */
+        .notes-block { background: #0d1b2a; border-radius: 16px; padding: 14px 16px; margin: 14px 0; border: 1px solid #fca311; }
+        .notes-block .confucius-quote { font-style: italic; color: #fca311; font-size: 1rem; margin-bottom: 8px; padding-left: 20px; border-left: 3px solid #fca311; }
+        .notes-block .confucius-quote::before { content: '“'; font-size: 1.4rem; color: #fca311; }
+        .notes-block .confucius-quote::after { content: '”'; font-size: 1.4rem; color: #fca311; }
+        .notes-block textarea { width: 100%; padding: 10px 14px; border-radius: 12px; background: #1b263b; border: 1px solid #415a77; color: #e0e1dd; font-size: 0.95rem; resize: vertical; min-height: 70px; font-family: inherit; }
+        .notes-block textarea::placeholder { color: #778da9; }
+
+        /* --- BOTÓN COMPLETAR --- */
+        .complete-btn-wrap { text-align: center; margin: 8px 0 14px; }
+        .complete-btn { background: #2d6a4f; border: none; color: #fff; font-weight: 700; padding: 12px 30px; border-radius: 50px; font-size: 1rem; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 0 #1b4332; width: 100%; max-width: 300px; }
+        .complete-btn:active { transform: translateY(4px); box-shadow: none; }
+        .complete-btn.done { background: #778da9; box-shadow: 0 4px 0 #415a77; cursor: default; }
+        .complete-btn.done:active { transform: none; }
+
+        /* --- TEMPORIZADOR HIIT --- */
+        .timer-box { background: #0d1b2a; border-radius: 18px; padding: 16px; text-align: center; border: 2px solid #415a77; margin: 12px 0 6px; }
+        .timer-display { font-size: 4rem; font-weight: 800; font-variant-numeric: tabular-nums; color: #fca311; background: #1b263b; padding: 6px 16px; border-radius: 16px; display: inline-block; min-width: 160px; letter-spacing: 4px; box-shadow: inset 0 0 10px rgba(0,0,0,0.6); margin-bottom: 6px; }
+        .timer-status { font-size: 0.9rem; font-weight: 600; color: #e0e1dd; background: #415a77; padding: 4px 16px; border-radius: 30px; display: inline-block; margin-bottom: 10px; }
+        .timer-controls button { background: #fca311; border: none; color: #0d1b2a; font-weight: 700; padding: 10px 24px; border-radius: 50px; font-size: 1rem; cursor: pointer; margin: 3px 6px; transition: all 0.2s; min-width: 90px; }
+        .timer-controls button:hover { transform: scale(1.04); background: #ffb833; }
+        .timer-controls button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+        .timer-controls .btn-reset { background: #778da9; color: #0d1b2a; }
+        .round-info { color: #778da9; font-size: 0.8rem; margin-top: 6px; }
+
+        /* --- VISTA ENTRENADOR --- */
+        .coach-dashboard { display: none; background: #0d1b2a; border-radius: 18px; padding: 16px; margin-top: 10px; border: 2px solid #fca311; }
+        .coach-dashboard.active { display: block; }
+        .coach-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; }
+        .coach-header h2 { color: #fca311; font-size: 1.4rem; }
+        .coach-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+        .coach-actions .icon-btn { background: #1b263b; border-color: #415a77; }
+
+        .player-card { background: #1b263b; border-radius: 14px; padding: 14px; margin-bottom: 12px; border-left: 4px solid #fca311; }
+        .player-card .p-name { font-size: 1.2rem; font-weight: 700; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 6px; }
+        .player-card .p-stats { display: flex; gap: 12px; flex-wrap: wrap; font-size: 0.85rem; color: #778da9; margin: 6px 0 8px; align-items: center; }
+        .player-card .p-stats span { background: #0d1b2a; padding: 2px 12px; border-radius: 20px; white-space: nowrap; }
+        .player-card .p-stats .physio-tag { background: #1b263b; border: 1px solid #fca311; color: #fca311; }
+        .player-card .p-notes { margin-top: 6px; font-size: 0.85rem; color: #e0e1dd; background: #0d1b2a; padding: 6px 12px; border-radius: 8px; border-left: 2px solid #fca311; }
+        .player-card .p-notes strong { color: #fca311; }
+        .player-card .coach-message-editor { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+        .player-card .coach-message-editor input { flex: 1; min-width: 150px; padding: 6px 12px; border-radius: 20px; background: #0d1b2a; border: 1px solid #415a77; color: #fff; font-size: 0.85rem; }
+        .player-card .coach-message-editor button { background: #2a9d8f; border: none; color: #fff; font-weight: 600; padding: 4px 16px; border-radius: 20px; font-size: 0.8rem; cursor: pointer; }
+        .player-card .coach-message-editor button:hover { background: #21867a; }
+        .progress-bar-bg { background: #0d1b2a; height: 10px; border-radius: 10px; overflow: hidden; margin-top: 6px; }
+        .progress-bar-fill { height: 100%; background: #fca311; width: 0%; border-radius: 10px; transition: width 0.4s; }
+        .empty-coach { color: #778da9; text-align: center; padding: 30px 10px; font-style: italic; }
+        .file-input-hidden { display: none; }
+
+        /* --- RESPONSIVE --- */
+        @media (max-width: 600px) {
+            .app-container { padding: 12px 10px; }
+            .header-left { gap: 8px; }
+            .header-logo { width: 45px; height: 45px; }
+            .header-text h1 { font-size: 1.3rem; }
+            .header-controls input { width: 90px; font-size: 0.75rem; }
+            .timer-display { font-size: 3rem; min-width: 120px; }
+            .tab-btn { font-size: 0.65rem; padding: 6px 8px; min-width: 40px; }
+            .day-title { font-size: 1.2rem; }
+            .icon-btn { font-size: 0.7rem; padding: 4px 10px; }
+            .coach-header h2 { font-size: 1.1rem; }
+            .week-banner .week-desc { font-size: 0.85rem; }
+            .player-card .p-stats { font-size: 0.75rem; gap: 6px; }
+            .notes-block .confucius-quote { font-size: 0.9rem; }
+            .player-card .coach-message-editor input { min-width: 100px; }
+        }
+        @media (max-width: 400px) {
+            .header-controls input { width: 70px; }
+            .timer-controls button { min-width: 70px; padding: 8px 14px; font-size: 0.85rem; }
+            .header-logo { width: 38px; height: 38px; }
+            .header-text h1 { font-size: 1.1rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container" id="app">
+
+    <!-- HEADER CON LOGO -->
+    <div class="header">
+        <div class="header-left">
+            <!-- ⚠️ CAMBIA "URL_DEL_ESCUDO" por la URL de tu imagen o pon "escudo.png" si está en la misma carpeta -->
+            <img src="URL_DEL_ESCUDO" alt="Escudo Círcolo Campano" class="header-logo" id="clubLogo">
+            <div class="header-text">
+                <h1>🏓 TENIS DE MESA PRO</h1>
+                <small>Círcolo Campano · La Plata</small>
+            </div>
+        </div>
+        <div class="header-controls">
+            <input type="text" id="playerNameInput" placeholder="Tu nombre" maxlength="20">
+            <button class="icon-btn mute-btn" id="muteBtn" title="Silenciar sonidos">🔊</button>
+            <button class="icon-btn active-btn" id="coachToggleBtn">👨‍🏫 Coach</button>
+        </div>
+    </div>
+
+    <!-- BANNER DE SEMANA -->
+    <div class="week-banner" id="weekBanner">
+        <span class="week-tag" id="weekTag">Semana 0</span>
+        <span class="week-desc" id="weekDesc">📋 <span id="weekFocus">Diagnóstico Inicial</span></span>
+        <span id="levelDisplay" class="level-badge" style="display:none;"></span>
+    </div>
+
+    <!-- MENSAJE DEL ENTRENADOR (se muestra si existe) -->
+    <div id="coachMessageContainer" style="display:none;" class="coach-message-block">
+        <h4>📩 Mensaje de tu entrenador</h4>
+        <p id="coachMessageText"></p>
+    </div>
+
+    <!-- PESTAÑAS DÍAS -->
+    <div class="tabs" id="tabsContainer">
+        <button class="tab-btn active" data-day="0">🔬 Diag</button>
+        <button class="tab-btn" data-day="1">Lun</button>
+        <button class="tab-btn" data-day="2">Mar</button>
+        <button class="tab-btn" data-day="3">Mié</button>
+        <button class="tab-btn" data-day="4">Jue (Comp)</button>
+    </div>
+
+    <!-- CONTENEDOR DEL DÍA ACTUAL -->
+    <div id="dayContentContainer"></div>
+
+    <!-- TEMPORIZADOR -->
+    <div class="timer-box">
+        <div class="timer-display" id="timerDisplay">07:00</div>
+        <div class="timer-status" id="timerStatus">⏸ Listo</div>
+        <div class="round-info" id="roundInfo">7 rondas · 40s/20s</div>
+        <div class="timer-controls">
+            <button id="startBtn">▶ Iniciar</button>
+            <button id="resetBtn" class="btn-reset">⟳ Reset</button>
+        </div>
+    </div>
+
+    <!-- BOTÓN COMPLETAR DÍA -->
+    <div class="complete-btn-wrap">
+        <button class="complete-btn" id="completeDayBtn">✅ Marcar como completado</button>
+    </div>
+
+    <!-- DASHBOARD ENTRENADOR -->
+    <div class="coach-dashboard" id="coachDashboard">
+        <div class="coach-header">
+            <h2>📊 Panel del Entrenador</h2>
+            <div class="coach-actions">
+                <button class="icon-btn" id="importCoachBtn">📥 Importar</button>
+                <button class="icon-btn" id="clearCoachBtn">🗑️ Limpiar</button>
+                <input type="file" id="fileInput" class="file-input-hidden" accept=".json" multiple>
+            </div>
+        </div>
+        <div id="coachPlayerList">
+            <div class="empty-coach">Aún no hay datos. Importa los JSON de tus jugadores.</div>
+        </div>
+    </div>
+
+    <!-- EXPORTAR / IMPORTAR -->
+    <div style="text-align:center; margin-top: 16px;">
+        <button class="icon-btn" id="exportBtn" style="background:#1b263b; border-color:#fca311; color:#fca311;">📤 Exportar mi progreso</button>
+        <button class="icon-btn" id="importOwnBtn" style="background:#1b263b; border-color:#415a77;">📥 Importar respaldo</button>
+        <input type="file" id="ownFileInput" class="file-input-hidden" accept=".json">
+    </div>
+
+</div>
+
+<script>
+    // ============================================================
+    // 1. DATOS DE LAS SEMANAS (0: Diagnóstico, 1-4: Entrenamiento)
+    // ============================================================
+    const WEEKLY_PLANS = [
+        // ---- SEMANA 0: DIAGNÓSTICO CON BURPEES ----
+        [{
+            title: '🔬 Semana 0 - Diagnóstico Físico HIIT (Burpees)',
+            subtitle: 'Test de capacidad cardiovascular con Burpees + FC + Borg (6-20)',
+            badge: 'TEST',
+            physical: '🏃‍♂️ **PRUEBA HIIT DE 7 MINUTOS (BURPEES)**\n\nCada **ronda** dura 1 minuto: 40 segundos de trabajo + 20 segundos de descanso. Total: 7 rondas.\n\n**Ejercicio**: Realiza **Burpees** al máximo ritmo durante los 40 segundos.\n\n**Objetivo**: Completar los 40 segundos de trabajo en cada ronda para sumarla. Si no puedes completar los 40 segundos, esa ronda no se cuenta.\n\n**Registro**: Al finalizar, anota cuántas rondas lograste completar (0 a 7), tu Frecuencia Cardíaca Máxima y el Borg.',
+            technical: '🏓 Mantén la técnica que prefieras durante los descansos. El objetivo es medir tu resistencia cardiovascular y tu capacidad de recuperación.',
+            nutrition: '💧 Hidrátate bien 30 minutos antes. No comas pesado 2 horas previas al test. Puedes tomar un poco de café o té 1 hora antes para activar el sistema nervioso (opcional).'
+        }],
+        // ---- SEMANA 1: AGILIDAD Y TÉCNICA DE DERECHA ----
+        [{
+            title: 'Lunes - Agilidad & Derecha',
+            subtitle: 'Juego de pies y golpe de derecha',
+            badge: 'DÍA 1',
+            physical: '🏃‍♂️ HIIT (abajo) + Skipping (3x{REPS}s) + Saltos laterales rápidos (3x{REPS}).',
+            technical: '🏓 Derecha cruzada en 3 posiciones (5x{TECH_REPS}). Giro de cadera y muñeca firme.',
+            nutrition: '🍌 Carbohidratos rápidos: Plátano 30 min antes. Agua con electrolitos durante el entreno.'
+        }, {
+            title: 'Martes - Agilidad & Revés',
+            subtitle: 'Reflejos y bloqueo de revés',
+            badge: 'DÍA 2',
+            physical: '🏃‍♂️ HIIT (abajo) + Escalera de agilidad (3x{REPS}) + Saltos a una pierna (3x{REPS} c/p).',
+            technical: '🏓 Revés cortado contra bloqueo (5x{TECH_REPS}). Enfoque en muñeca y cierre de paleta.',
+            nutrition: '🥗 Hidratación intensa + Frutos rojos para reducir la inflamación.'
+        }, {
+            title: 'Miércoles - Agilidad & Saques',
+            subtitle: 'Precisión en el saque',
+            badge: 'DÍA 3',
+            physical: '🏃‍♂️ HIIT (abajo) + Plancha lateral (3x{REPS}s) + Bicicleta en el suelo (3x{REPS}).',
+            technical: '🏓 Saques con efecto corto/largo (5x{TECH_REPS}). Coloca la bola en los 3 puntos clave.',
+            nutrition: '🥚 Proteína magra: 2 huevos duros en la merienda para la recuperación muscular.'
+        }, {
+            title: 'Jueves - Día de Competencia (Agilidad)',
+            subtitle: 'Activación y estrategia',
+            badge: '⚔️ MATCH DAY',
+            physical: '⚡ HIIT de activación (3 rondas, 3:00 min) + 5 min de estiramientos dinámicos.',
+            technical: '🏓 Calienta 5 min. Estrategia: mueve al rival con saques cortos y ataca con derecha cruzada.',
+            nutrition: '🍝 Pasta ligera 3h antes. Durante: barrita energética y agua a pequeños sorbos.'
+        }],
+        // ---- SEMANA 2: FUERZA Y POTENCIA ----
+        [{
+            title: 'Lunes - Fuerza & Topspin Derecha',
+            subtitle: 'Potencia de piernas y ataque',
+            badge: 'DÍA 1',
+            physical: '🏋️ HIIT (abajo) + Sentadillas profundas (3x{REPS}) + Zancadas con salto (3x{REPS}).',
+            technical: '🏓 Topspin de derecha con aceleración de muñeca (5x{TECH_REPS}). Giro de cadera y impacto.',
+            nutrition: '🥩 Carbohidratos complejos + Proteína: Arroz integral con pollo 2h antes.'
+        }, {
+            title: 'Martes - Fuerza & Topspin Revés',
+            subtitle: 'Potencia en el revés',
+            badge: 'DÍA 2',
+            physical: '🏋️ HIIT (abajo) + Peso muerto a una pierna (3x{REPS} c/p) + Saltos al cajón (3x{REPS}).',
+            technical: '🏓 Topspin de revés con apertura de muñeca (5x{TECH_REPS}). Elevación de la bola.',
+            nutrition: '🐟 Pescado azul (salmón) + Quinoa. Omega-3 para la recuperación articular.'
+        }, {
+            title: 'Miércoles - Fuerza & Smash',
+            subtitle: 'Remate y finalización',
+            badge: 'DÍA 3',
+            physical: '🏋️ HIIT (abajo) + Flexiones con palmada (3x{REPS}) + Fondos en paralelas (3x{REPS}).',
+            technical: '🏓 Smash contra bola alta (5x{TECH_REPS}). Salto y muñeca hacia abajo.',
+            nutrition: '🥛 Batido de proteína + Avena inmediatamente después del entreno (ventana anabólica).'
+        }, {
+            title: 'Jueves - Día de Competencia (Potencia)',
+            subtitle: 'Activación pliométrica',
+            badge: '⚔️ MATCH DAY',
+            physical: '⚡ 3 rondas HIIT + 3 series de saltos verticales (x8) para activar el sistema nervioso.',
+            technical: '🏓 Calienta con topspins. Estrategia: ataca con potencia al centro de la mesa.',
+            nutrition: '🍚 Pasta con verduras 3h antes. Hidratación con isotónico.'
+        }],
+        // ---- SEMANA 3: RESISTENCIA Y PRECISIÓN ----
+        [{
+            title: 'Lunes - Resistencia & Juego de Pies',
+            subtitle: 'Mantener el ritmo',
+            badge: 'DÍA 1',
+            physical: '🏃‍♂️ HIIT (abajo) + Burpees (3x{REPS}) + Mountain climbers (3x{REPS}).',
+            technical: '🏓 Juego de pies en 3 puntos (5x{TECH_REPS}). Desplazamientos laterales y diagonales.',
+            nutrition: '💧 Hidratación máxima: 2.5L de agua. Añade sales minerales al agua.'
+        }, {
+            title: 'Martes - Resistencia & Revés Cortado',
+            subtitle: 'Control y paciencia',
+            badge: 'DÍA 2',
+            physical: '🏃‍♂️ HIIT (abajo) + Plancha con elevación de piernas (3x{REPS} c/p) + Zancadas laterales.',
+            technical: '🏓 Revés cortado largo y corto (5x{TECH_REPS}). Enfoque en el efecto y la colocación.',
+            nutrition: '🌾 Cereales integrales + Frutas deshidratadas. Energía de liberación lenta.'
+        }, {
+            title: 'Miércoles - Resistencia & Colocación',
+            subtitle: 'Precisión en las esquinas',
+            badge: 'DÍA 3',
+            physical: '🏃‍♂️ HIIT (abajo) + Saltos de tijera (3x{REPS}) + Core con giro (3x{REPS} c/lado).',
+            technical: '🏓 Colocación de bolas en esquinas y centro (5x{TECH_REPS}). Control de la muñeca.',
+            nutrition: '🥗 Ensalada de garbanzos con atún. Rica en fibra y proteína.'
+        }, {
+            title: 'Jueves - Día de Competencia (Resistencia)',
+            subtitle: 'Mentalidad de largos rallies',
+            badge: '⚔️ MATCH DAY',
+            physical: '⚡ 3 rondas HIIT + 2 min de cuerda (opcional) para mantener el flujo sanguíneo.',
+            technical: '🏓 Calienta con rallies largos. Estrategia: juega profundo y espera el error del rival.',
+            nutrition: '🍌 Plátano + Barrita de cereales antes. Durante: bebida isotónica.'
+        }],
+        // ---- SEMANA 4: VELOCIDAD Y REFLEJOS ----
+        [{
+            title: 'Lunes - Velocidad & Bloqueo',
+            subtitle: 'Reflejos rápidos',
+            badge: 'DÍA 1',
+            physical: '🏃‍♂️ HIIT (abajo) + Sprint en corto espacio (5x{REPS}m) + Cambios de dirección rápidos.',
+            technical: '🏓 Bloqueo contra topspin (5x{TECH_REPS}). Anticipación y toque suave de muñeca.',
+            nutrition: '🍓 Antioxidantes: Frutos rojos + Té verde. Ayuda a los reflejos.'
+        }, {
+            title: 'Martes - Velocidad & Contraataque',
+            subtitle: 'Transición defensa-ataque',
+            badge: 'DÍA 2',
+            physical: '🏃‍♂️ HIIT (abajo) + Sentadillas con salto lateral (3x{REPS}) + Skip alto (3x{REPS}s).',
+            technical: '🏓 Contraataque de derecha tras bloqueo (5x{TECH_REPS}). Transición y peso corporal.',
+            nutrition: '🥩 Carne magra (pavo) + Patata asada. Fósforo y potasio para la contracción muscular.'
+        }, {
+            title: 'Miércoles - Velocidad & Recepción',
+            subtitle: 'Leer el saque rival',
+            badge: 'DÍA 3',
+            physical: '🏃‍♂️ HIIT (abajo) + Russian twists con peso (3x{REPS}) + Plancha frontal (3x{REPS}s).',
+            technical: '🏓 Recepción de saque con colocación a los 3 puntos (5x{TECH_REPS}). Lectura del efecto.',
+            nutrition: '🥑 Aguacate + Pan integral. Grasas saludables y fibra para mantener la energía.'
+        }, {
+            title: 'Jueves - Día de Competencia (Velocidad)',
+            subtitle: 'Juego de ataque rápido',
+            badge: '⚔️ MATCH DAY',
+            physical: '⚡ 3 rondas HIIT + 5 min de movilidad articular para máxima velocidad.',
+            technical: '🏓 Calienta con bloqueos rápidos. Estrategia: toma la iniciativa con saques profundos.',
+            nutrition: '🍯 Miel + Yogur 2h antes. Azúcares naturales para explosividad.'
+        }]
+    ];
+
+    const WEEK_NAMES = ['🔬 Diagnóstico Físico', '🏃 Agilidad y Técnica', '💪 Fuerza y Potencia', '🏃‍♂️ Resistencia y Precisión',
+        '⚡ Velocidad y Reflejos'
+    ];
+    const DAYS_OF_WEEK = ['Diagnóstico', 'Lunes', 'Martes', 'Miércoles', 'Jueves'];
+
+    // ============================================================
+    // 2. FRASES DE CONFUCIO
+    // ============================================================
+    const CONFUCIUS_QUOTES = [
+        "El hombre que mueve una montaña comienza por apartar piedras pequeñas. – Confucio",
+        "El cuerpo es el templo del espíritu; cuídalo con disciplina. – Confucio (adaptado)",
+        "La paciencia y la constancia son las mejores armas del tenismesista. – Sabiduría de la mesa",
+        "No es la fuerza, sino la constancia, la que convierte al jugador en maestro. – Confucio",
+        "El verdadero guerrero no vence a los demás, sino a su propia impaciencia. – Confucio",
+        "Cada punto es una oportunidad para aprender, cada error una lección. – Confucio (adaptado)",
+        "El movimiento perfecto nace del reposo interior. – Confucio (aplicado al tenis de mesa)",
+        "Quien domina el efecto, domina el partido. – Sabiduría del tenis de mesa",
+        "La mente debe ser rápida como el reflejo, y el cuerpo ligero como la pluma. – Confucio (adaptado)",
+        "El éxito en la mesa es la suma de pequeños hábitos diarios. – Confucio",
+        "No temas perder; teme no aprender de la pérdida. – Confucio (para el tenis de mesa)",
+        "La técnica sin corazón es solo un gesto vacío. – Confucio (adaptado)",
+        "El pie que se mueve antes que la mano es la clave del golpe perfecto. – Sabiduría del tenis de mesa",
+        "El silencio del cuerpo es la preparación del golpe. – Confucio (adaptado)",
+        "Cada entrenamiento es una semilla que cosecharás en la competencia. – Confucio",
+        "Respira hondo y el golpe fluirá como el agua. – Confucio (adaptado al tenis de mesa)",
+        "El verdadero rival está en tu propia mente; domínalo y vencerás. – Confucio",
+        "La constancia en el HIIT forja el corazón del campeón. – Sabiduría del tenis de mesa",
+        "El tenis de mesa es un diálogo entre el cuerpo y la pelota. – Confucio (adaptado)",
+        "Cuida tu alimentación como cuidas tu técnica; ambas son una sola. – Confucio"
+    ];
+
+    // ============================================================
+    // 3. ESTADO DE LA APLICACIÓN
+    // ============================================================
+    let currentDay = 0;
+    let isMuted = false;
+    let isCoachMode = false;
+    let currentWeekIdx = 0;
+
+    let playerData = {
+        name: '',
+        diagnostic: {
+            done: false,
+            level: 'beginner',
+            rounds: 0,
+            heartRate: 0,
+            borgScale: 6,
+            date: ''
+        },
+        logs: [],
+        notes: {},
+        coachMessage: ''
+    };
+
+    let coachData = { players: [] };
+
+    // ============================================================
+    // 4. SONIDOS
+    // ============================================================
+    function playBeep(freq, duration, vol = 0.4) {
+        if (isMuted) return;
+        try {
+            const ctx = new(window.AudioContext || window.webkitAudioContext)();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.frequency.value = freq;
+            osc.type = 'sine';
+            gain.gain.value = vol;
+            osc.start();
+            osc.stop(ctx.currentTime + duration / 1000);
+        } catch (e) { /* fallback */ }
+    }
+    function playWorkBeep() { playBeep(880, 180, 0.5); }
+    function playRestBeep() { playBeep(440, 180, 0.4); }
+    function playFinishBeep() {
+        setTimeout(() => playBeep(1000, 200, 0.6), 0);
+        setTimeout(() => playBeep(1000, 200, 0.6), 300);
+        setTimeout(() => playBeep(1200, 350, 0.7), 600);
+    }
+
+    // ============================================================
+    // 5. GESTIÓN DE DATOS
+    // ============================================================
+    function loadPlayerData() {
+        const saved = localStorage.getItem('tenismesa_player');
+        if (saved) {
+            try {
+                const parsed = JSON.parse(saved);
+                if (!parsed.diagnostic) {
+                    parsed.diagnostic = { done: false, level: 'beginner', rounds: 0, heartRate: 0, borgScale: 6,
+                        date: '' };
+                }
+                if (!parsed.diagnostic.heartRate) parsed.diagnostic.heartRate = 0;
+                if (!parsed.diagnostic.borgScale) parsed.diagnostic.borgScale = 6;
+                if (!parsed.notes) parsed.notes = {};
+                if (!parsed.coachMessage) parsed.coachMessage = '';
+                playerData = parsed;
+                if (playerData.name) document.getElementById('playerNameInput').value = playerData.name;
+                return;
+            } catch (e) {}
+        }
+        playerData = {
+            name: '',
+            diagnostic: { done: false, level: 'beginner', rounds: 0, heartRate: 0, borgScale: 6, date: '' },
+            logs: [],
+            notes: {},
+            coachMessage: ''
+        };
+        document.getElementById('playerNameInput').value = '';
+    }
+
+    function savePlayerData() {
+        localStorage.setItem('tenismesa_player', JSON.stringify(playerData));
+    }
+
+    function loadCoachData() {
+        const saved = localStorage.getItem('tenismesa_coach');
+        if (saved) {
+            try { coachData = JSON.parse(saved); return; } catch (e) {}
+        }
+        coachData = { players: [] };
+    }
+
+    function saveCoachData() {
+        localStorage.setItem('tenismesa_coach', JSON.stringify(coachData));
+    }
+
+    function getToday() {
+        return new Date().toISOString().split('T')[0];
+    }
+
+    function isDayCompletedToday(dayId) {
+        const today = getToday();
+        return playerData.logs.some(log => log.dayId === dayId && log.date === today && log.completed === true);
+    }
+
+    function markDayCompleted(dayId) {
+        if (isDayCompletedToday(dayId)) return false;
+        const today = getToday();
+        playerData.logs.push({ dayId, date: today, completed: true });
+        savePlayerData();
+        return true;
+    }
+
+    function getNote(dayId) {
+        if (playerData.notes && playerData.notes[dayId]) return playerData.notes[dayId];
+        return '';
+    }
+    function saveNote(dayId, text) {
+        if (!playerData.notes) playerData.notes = {};
+        playerData.notes[dayId] = text;
+        savePlayerData();
+    }
+    function getRandomQuote() {
+        return CONFUCIUS_QUOTES[Math.floor(Math.random() * CONFUCIUS_QUOTES.length)];
+    }
+
+    // ============================================================
+    // 6. LÓGICA DE SEMANA ACTUAL
+    // ============================================================
+    function getCurrentWeekIndex() {
+        if (!playerData.diagnostic || !playerData.diagnostic.done) return 0;
+        const now = new Date();
+        const startOfYear = new Date(now.getFullYear(), 0, 1);
+        const days = Math.floor((now - startOfYear) / (24 * 60 * 60 * 1000));
+        const weekNum = Math.ceil((days + startOfYear.getDay() + 1) / 7);
+        return (weekNum % 4) + 1;
+    }
+
+    // ============================================================
+    // 7. PERSONALIZACIÓN SEGÚN NIVEL
+    // ============================================================
+    function getPersonalizedText(text, level) {
+        let reps = 8, techReps = 8;
+        if (level === 'beginner') { reps = 8; techReps = 8; }
+        else if (level === 'intermediate') { reps = 12; techReps = 10; }
+        else if (level === 'advanced') { reps = 16; techReps = 12; }
+        return text.replace(/{REPS}/g, reps).replace(/{TECH_REPS}/g, techReps);
+    }
+
+    // ============================================================
+    // 8. TEMPORIZADOR HIIT
+    // ============================================================
+    let timerInterval = null;
+    let isRunning = false;
+    let currentRound = 0;
+    let isWork = true;
+    let secondsLeft = 40;
+    let totalRounds = 7;
+    let totalSecs = 420;
+
+    const timerDisplay = document.getElementById('timerDisplay');
+    const timerStatus = document.getElementById('timerStatus');
+    const roundInfo = document.getElementById('roundInfo');
+    const startBtn = document.getElementById('startBtn');
+    const resetBtn = document.getElementById('resetBtn');
+
+    function getTimerParams() {
+        if (currentDay === 4) return { rounds: 3, seconds: 180 };
+        return { rounds: 7, seconds: 420 };
+    }
+    function updateTimerDisplay(sec) {
+        const m = Math.floor(sec / 60);
+        const s = sec % 60;
+        timerDisplay.textContent = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+    }
+    function resetTimer() {
+        clearInterval(timerInterval);
+        isRunning = false;
+        const p = getTimerParams();
+        totalRounds = p.rounds;
+        totalSecs = p.seconds;
+        currentRound = 0;
+        isWork = true;
+        secondsLeft = 40;
+        updateTimerDisplay(totalSecs);
+        timerStatus.textContent = '⏸ Listo';
+        timerStatus.style.color = '#e0e1dd';
+        startBtn.textContent = '▶ Iniciar';
+        startBtn.disabled = false;
+        roundInfo.textContent = totalRounds === 3 ? '⚡ 3 rondas · 40s/20s' : '🔥 7 rondas · 40s/20s';
+    }
+    function startTimer() {
+        if (isRunning) return;
+        if (timerDisplay.textContent === '00:00') resetTimer();
+        const p = getTimerParams();
+        totalRounds = p.rounds;
+        totalSecs = p.seconds;
+        if (currentRound === 0 && (timerDisplay.textContent === '07:00' || timerDisplay.textContent === '03:00')) {
+            isWork = true;
+            secondsLeft = 40;
+            currentRound = 0;
+        }
+        isRunning = true;
+        startBtn.textContent = '⏸ Pausa';
+        timerStatus.textContent = `⚡ Ronda ${currentRound+1}/${totalRounds} - ¡TRABAJO!`;
+        timerStatus.style.color = '#fca311';
+        playWorkBeep();
+        clearInterval(timerInterval);
+        timerInterval = setInterval(() => {
+            secondsLeft--;
+            if (secondsLeft < 0) {
+                if (isWork) {
+                    isWork = false;
+                    secondsLeft = 20;
+                    timerStatus.textContent = `💨 Ronda ${currentRound+1}/${totalRounds} - DESCANSO`;
+                    timerStatus.style.color = '#4caf50';
+                    updateTimerDisplay(secondsLeft);
+                    playRestBeep();
+                } else {
+                    currentRound++;
+                    if (currentRound >= totalRounds) {
+                        clearInterval(timerInterval);
+                        isRunning = false;
+                        startBtn.textContent = '▶ Iniciar';
+                        timerDisplay.textContent = '00:00';
+                        timerStatus.textContent = '✅ ¡HIIT COMPLETADO! 🎉';
+                        timerStatus.style.color = '#4caf50';
+                        startBtn.disabled = false;
+                        playFinishBeep();
+                        return;
+                    } else {
+                        isWork = true;
+                        secondsLeft = 40;
+                        timerStatus.textContent = `⚡ Ronda ${currentRound+1}/${totalRounds} - ¡TRABAJO!`;
+                        timerStatus.style.color = '#fca311';
+                        updateTimerDisplay(secondsLeft);
+                        playWorkBeep();
+                    }
+                }
+            } else {
+                updateTimerDisplay(secondsLeft);
+            }
+        }, 1000);
+    }
+    function pauseTimer() {
+        if (!isRunning) return;
+        clearInterval(timerInterval);
+        isRunning = false;
+        startBtn.textContent = '▶ Reanudar';
+        timerStatus.textContent = `⏸ Pausado en ${timerDisplay.textContent}`;
+        timerStatus.style.color = '#778da9';
+    }
+    startBtn.addEventListener('click', () => {
+        if (isRunning) pauseTimer();
+        else startTimer();
+    });
+    resetBtn.addEventListener('click', resetTimer);
+
+    // ============================================================
+    // 9. RENDERIZAR DÍA (CON IMAGEN DEL BURPEE)
+    // ============================================================
+    function renderDay(dayIndex) {
+        currentDay = dayIndex;
+        const diagnosticDone = playerData.diagnostic && playerData.diagnostic.done;
+        const level = diagnosticDone ? playerData.diagnostic.level : 'beginner';
+
+        if (dayIndex > 0 && !diagnosticDone) {
+            alert('🔬 Primero debes completar la Semana 0 de Diagnóstico (pestaña "Diag").');
+            document.querySelector('.tab-btn[data-day="0"]')?.click();
+            return;
+        }
+
+        let weekIdx = 0;
+        if (dayIndex === 0) {
+            weekIdx = 0;
+        } else {
+            weekIdx = getCurrentWeekIndex();
+            if (weekIdx < 1 || weekIdx > 4) weekIdx = 1;
+        }
+        currentWeekIdx = weekIdx;
+        const weekData = WEEKLY_PLANS[weekIdx];
+        let dayData;
+        if (weekIdx === 0) {
+            dayData = weekData[0];
+        } else {
+            dayData = weekData[dayIndex - 1];
+        }
+        if (!dayData) return;
+
+        const weekTag = document.getElementById('weekTag');
+        const weekFocus = document.getElementById('weekFocus');
+        const levelDisplay = document.getElementById('levelDisplay');
+
+        if (weekIdx === 0) {
+            weekTag.textContent = 'Semana 0';
+            weekFocus.textContent = 'Diagnóstico Físico HIIT';
+            levelDisplay.style.display = 'none';
+        } else {
+            weekTag.textContent = `Semana ${weekIdx}`;
+            weekFocus.textContent = WEEK_NAMES[weekIdx];
+            if (diagnosticDone) {
+                levelDisplay.style.display = 'inline-block';
+                const levelNames = { beginner: 'Principiante', intermediate: 'Intermedio', advanced: 'Avanzado' };
+                levelDisplay.textContent = `🎯 Nivel: ${levelNames[level]}`;
+                levelDisplay.className = `level-badge ${level}`;
+            } else {
+                levelDisplay.style.display = 'none';
+            }
+        }
+
+        let physicalText = dayData.physical, technicalText = dayData.technical, nutritionText = dayData.nutrition;
+        if (weekIdx !== 0 && diagnosticDone) {
+            physicalText = getPersonalizedText(physicalText, level);
+            technicalText = getPersonalizedText(technicalText, level);
+            nutritionText = getPersonalizedText(nutritionText, level);
+        }
+
+        const isDone = isDayCompletedToday(dayIndex);
+        const container = document.getElementById('dayContentContainer');
+        const savedNote = getNote(dayIndex);
+        const randomQuote = getRandomQuote();
+
+        const coachMsg = playerData.coachMessage || '';
+        const coachMsgBlock = document.getElementById('coachMessageContainer');
+        if (coachMsg.trim() !== '') {
+            coachMsgBlock.style.display = 'block';
+            document.getElementById('coachMessageText').textContent = coachMsg;
+        } else {
+            coachMsgBlock.style.display = 'none';
+        }
+
+        let diagnosticHtml = '';
+        if (weekIdx === 0) {
+            const hr = playerData.diagnostic.heartRate || '';
+            const borg = playerData.diagnostic.borgScale || 6;
+            const levelNames = { beginner: 'Principiante (0-3 rnds)', intermediate: 'Intermedio (4-5 rnds)',
+                advanced: 'Avanzado (6-7 rnds)' };
+            const currentLevelName = diagnosticDone ? levelNames[playerData.diagnostic.level] : 'No registrado';
+
+            diagnosticHtml = `
+                <div class="diagnostic-form" id="diagnosticForm">
+                    <h3 style="color:#fca311; margin-bottom:8px;">📝 Registra tus resultados fisiológicos</h3>
+
+                    <label for="roundsInput">1. Rondas completadas (0 a 7)</label>
+                    <input type="number" id="roundsInput" min="0" max="7" value="${playerData.diagnostic.rounds || ''}" placeholder="Ej: 5">
+
+                    <label for="heartRateInput">2. Frecuencia Cardíaca Máxima (lpm)</label>
+                    <input type="number" id="heartRateInput" min="60" max="220" value="${hr}" placeholder="Ej: 175">
+                    <div class="hint">💓 Mide tus pulsaciones justo al finalizar el HIIT.</div>
+
+                    <label for="borgInput">3. Escala de Borg (RPE 6-20) </label>
+                    <input type="number" id="borgInput" min="6" max="20" step="1" value="${borg}" placeholder="Ej: 13">
+                    <div class="hint">
+                        <strong>Referencia:</strong> 
+                        6 = Sin esfuerzo (reposo) · 9 = Muy ligero · 13 = Algo duro · 
+                        15 = Duro · 17 = Muy duro · 20 = Máximo esfuerzo.
+                    </div>
+
+                    ${diagnosticDone ? `
+                        <div class="diagnostic-result">
+                            <p>✅ Diagnóstico completado el <strong>${playerData.diagnostic.date}</strong></p>
+                            <p>📊 Rondas: <strong>${playerData.diagnostic.rounds}</strong> | Nivel: <strong>${currentLevelName}</strong></p>
+                            <p>❤️ FC Máx: <strong>${playerData.diagnostic.heartRate} lpm</strong> | Borg: <strong>${playerData.diagnostic.borgScale}/20</strong></p>
+                            <p style="margin-top:8px; color:#778da9;">💡 Puedes rehacer el test si lo deseas (borra el progreso o exporta/importa).</p>
+                        </div>
+                    ` : `
+                        <div class="diagnostic-result" style="border-left-color:#4caf50;">
+                            <p>ℹ️ Completa el HIIT, ingresa tus datos y presiona "Guardar Diagnóstico".</p>
+                        </div>
+                    `}
+                </div>
+            `;
+        }
+
+        // --- BLOQUE DE IMAGEN DEL BURPEE (SOLO EN DIAGNÓSTICO) ---
+        let burpeeImageHtml = '';
+        if (weekIdx === 0) {
+            burpeeImageHtml = `
+                <div class="burpee-img-container">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Burpee_%28exercise%29.jpg/400px-Burpee_%28exercise%29.jpg" 
+                         alt="Técnica del Burpee en 4 pasos" 
+                         loading="lazy">
+                    <div class="caption">
+                        <strong>1️⃣ Sentadilla</strong> · <strong>2️⃣ Plancha</strong> · <strong>3️⃣ Flexión</strong> · <strong>4️⃣ Salto</strong>
+                    </div>
+                </div>
+            `;
+        }
+
+        const notesHtml = `
+            <div class="notes-block" id="notesBlock">
+                <div class="confucius-quote">${randomQuote}</div>
+                <textarea id="dayNote" rows="2" placeholder="Escribe aquí tus reflexiones, aprendizajes o cualquier nota personal sobre el entrenamiento de hoy...">${savedNote}</textarea>
+                <div style="text-align:right; margin-top:4px;">
+                    <button class="icon-btn" id="saveNoteBtn" style="background:#1b263b; border-color:#fca311; color:#fca311; font-size:0.8rem;">💾 Guardar nota</button>
+                </div>
+            </div>
+        `;
+
+        container.innerHTML = `
+            <div class="day-content active">
+                <span class="day-badge">${dayData.badge}</span>
+                <div class="day-title">${dayData.title}</div>
+                <div class="day-sub">${dayData.subtitle}</div>
+                ${diagnosticHtml}
+                ${burpeeImageHtml}
+                ${notesHtml}
+                <div class="section-card">
+                    <h3>💪 Preparación Física</h3>
+                    <p>${physicalText}</p>
+                </div>
+                <div class="section-card">
+                    <h3>🏓 Preparación Técnica</h3>
+                    <p>${technicalText}</p>
+                </div>
+                <div class="section-card" style="border-left-color:#4caf50;">
+                    <h3>🥗 Nutrición</h3>
+                    <div class="nutrition-tip">
+                        <span>🍽️</span>
+                        <p>${nutritionText}</p>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        const saveNoteBtn = document.getElementById('saveNoteBtn');
+        if (saveNoteBtn) {
+            saveNoteBtn.addEventListener('click', function() {
+                const textarea = document.getElementById('dayNote');
+                if (textarea) {
+                    saveNote(currentDay, textarea.value);
+                    this.textContent = '✅ Guardado';
+                    setTimeout(() => { this.textContent = '💾 Guardar nota'; }, 1500);
+                }
+            });
+        }
+        const noteTextarea = document.getElementById('dayNote');
+        if (noteTextarea) {
+            noteTextarea.addEventListener('blur', function() {
+                saveNote(currentDay, this.value);
+            });
+        }
+
+        const p = getTimerParams();
+        roundInfo.textContent = p.rounds === 3 ? '⚡ 3 rondas · 40s/20s' : '🔥 7 rondas · 40s/20s';
+        if (!isRunning && timerDisplay.textContent !== '00:00') {
+            const secs = p.seconds;
+            const m = Math.floor(secs / 60);
+            const s = secs % 60;
+            timerDisplay.textContent = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+            resetTimer();
+        }
+
+        const completeBtn = document.getElementById('completeDayBtn');
+        if (isDone && weekIdx !== 0) {
+            completeBtn.textContent = '✅ Ya completado hoy';
+            completeBtn.classList.add('done');
+            completeBtn.disabled = true;
+        } else if (weekIdx === 0 && diagnosticDone) {
+            completeBtn.textContent = '📊 Diagnóstico guardado';
+            completeBtn.classList.add('done');
+            completeBtn.disabled = true;
+        } else {
+            completeBtn.textContent = weekIdx === 0 ? '📊 Guardar Diagnóstico' : '✅ Marcar como completado';
+            completeBtn.classList.remove('done');
+            completeBtn.disabled = false;
+        }
+    }
+
+    // ============================================================
+    // 10. MANEJAR COMPLETAR DÍA
+    // ============================================================
+    document.getElementById('completeDayBtn').addEventListener('click', function() {
+        if (this.disabled) return;
+        const dayId = currentDay;
+        const isDiagnostic = (dayId === 0);
+
+        if (isDiagnostic) {
+            const roundsInput = document.getElementById('roundsInput');
+            const hrInput = document.getElementById('heartRateInput');
+            const borgInput = document.getElementById('borgInput');
+
+            if (!roundsInput || !hrInput || !borgInput) {
+                alert('❌ Error: No se encontraron los campos del diagnóstico.');
+                return;
+            }
+
+            const rounds = parseInt(roundsInput.value);
+            const heartRate = parseInt(hrInput.value);
+            const borgScale = parseFloat(borgInput.value);
+
+            if (isNaN(rounds) || rounds < 0 || rounds > 7) {
+                alert('❌ Ingresa un número válido de rondas (0 a 7).');
+                roundsInput.focus();
+                return;
+            }
+            if (isNaN(heartRate) || heartRate < 60 || heartRate > 220) {
+                alert('❌ Ingresa una Frecuencia Cardíaca válida (60 a 220 lpm).');
+                hrInput.focus();
+                return;
+            }
+            if (isNaN(borgScale) || borgScale < 6 || borgScale > 20) {
+                alert('❌ Ingresa un valor válido en la Escala de Borg (6 a 20).');
+                borgInput.focus();
+                return;
+            }
+
+            let level = 'beginner';
+            if (rounds >= 6) level = 'advanced';
+            else if (rounds >= 3) level = 'intermediate';
+
+            playerData.diagnostic = {
+                done: true,
+                level: level,
+                rounds: rounds,
+                heartRate: heartRate,
+                borgScale: borgScale,
+                date: getToday()
+            };
+            savePlayerData();
+            markDayCompleted(0);
+
+            alert(`✅ Diagnóstico guardado.\nNivel: ${level === 'beginner' ? 'Principiante' : level === 'intermediate' ? 'Intermedio' : 'Avanzado'} (${rounds} rondas)\n❤️ FC Máx: ${heartRate} lpm\n📊 Borg: ${borgScale}/20`);
+
+            renderDay(0);
+            updateTabsState();
+            if (isCoachMode) renderCoachDashboard();
+            return;
+        }
+
+        const success = markDayCompleted(dayId);
+        if (success) {
+            const dayName = DAYS_OF_WEEK[dayId];
+            alert(`🎉 ¡Excelente! Has completado ${dayName} (Semana ${currentWeekIdx}).`);
+            renderDay(dayId);
+            if (isCoachMode) renderCoachDashboard();
+        } else {
+            alert('Ya habías completado este día hoy.');
+            renderDay(dayId);
+        }
+    });
+
+    // ============================================================
+    // 11. PESTAÑAS
+    // ============================================================
+    const tabButtons = document.querySelectorAll('.tab-btn');
+
+    function updateTabsState() {
+        const diagnosticDone = playerData.diagnostic && playerData.diagnostic.done;
+        tabButtons.forEach((btn, idx) => {
+            if (idx > 0 && !diagnosticDone) btn.classList.add('disabled');
+            else btn.classList.remove('disabled');
+        });
+    }
+
+    tabButtons.forEach((btn, idx) => {
+        btn.addEventListener('click', () => {
+            const diagnosticDone = playerData.diagnostic && playerData.diagnostic.done;
+            if (idx > 0 && !diagnosticDone) {
+                alert('🔬 Primero completa la Semana 0 de Diagnóstico.');
+                return;
+            }
+            tabButtons.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            if (isRunning) pauseTimer();
+            resetTimer();
+            renderDay(idx);
+        });
+    });
+
+    // ============================================================
+    // 12. COACH MODE
+    // ============================================================
+    const coachToggleBtn = document.getElementById('coachToggleBtn');
+    const coachDashboard = document.getElementById('coachDashboard');
+
+    coachToggleBtn.addEventListener('click', () => {
+        isCoachMode = !isCoachMode;
+        coachToggleBtn.classList.toggle('active-btn', isCoachMode);
+        if (isCoachMode) {
+            coachDashboard.classList.add('active');
+            renderCoachDashboard();
+        } else {
+            coachDashboard.classList.remove('active');
+        }
+    });
+
+    function renderCoachDashboard() {
+        const list = document.getElementById('coachPlayerList');
+        if (coachData.players.length === 0) {
+            list.innerHTML = `<div class="empty-coach">Aún no hay datos. Importa los JSON de tus jugadores.</div>`;
+            return;
+        }
+        let html = '';
+        const sorted = [...coachData.players].sort((a, b) => a.playerName.localeCompare(b.playerName));
+        sorted.forEach((p, index) => {
+            const total = p.logs.length;
+            const last = p.logs.length > 0 ? p.logs.sort((a, b) => b.date.localeCompare(a.date))[0] : null;
+            const lastDate = last ? last.date : 'Nunca';
+            const uniqueDays = new Set(p.logs.map(l => l.dayId));
+            const progress = Math.min((uniqueDays.size / 4) * 100, 100);
+
+            let physioHtml = 'Sin diagnóstico';
+            if (p.diagnostic && p.diagnostic.done) {
+                const levelNames = { beginner: '🔵 Principiante', intermediate: '🟡 Intermedio', advanced: '🔴 Avanzado' };
+                const levelStr = levelNames[p.diagnostic.level] || 'Sin nivel';
+                const hr = p.diagnostic.heartRate || '--';
+                const borg = p.diagnostic.borgScale || '--';
+                physioHtml = `${levelStr} | ❤️ ${hr} lpm | Borg ${borg}/20`;
+            }
+
+            let noteHtml = '';
+            if (p.notes && typeof p.notes === 'object') {
+                const dayKeys = Object.keys(p.notes);
+                if (dayKeys.length > 0) {
+                    const lastNoteKey = dayKeys.sort((a,b) => parseInt(b)-parseInt(a))[0];
+                    const lastNote = p.notes[lastNoteKey];
+                    if (lastNote && lastNote.trim()) {
+                        noteHtml = `<div class="p-notes"><strong>📝 Última nota:</strong> ${lastNote.substring(0, 60)}${lastNote.length > 60 ? '...' : ''}</div>`;
+                    }
+                }
+            }
+
+            const currentMsg = p.coachMessage || '';
+
+            html += `
+                <div class="player-card">
+                    <div class="p-name">
+                        <span>🏓 ${p.playerName}</span>
+                        <span style="color:#fca311; font-size:0.9rem;">${total} sesiones</span>
+                    </div>
+                    <div class="p-stats">
+                        <span class="physio-tag">📊 ${physioHtml}</span>
+                        <span>📅 Último: ${lastDate}</span>
+                        <span>📈 ${uniqueDays.size}/4 días</span>
+                    </div>
+                    ${noteHtml}
+                    <div class="coach-message-editor">
+                        <input type="text" id="coachMsgInput_${index}" placeholder="Mensaje para el jugador" value="${currentMsg}">
+                        <button onclick="saveCoachMessage(${index})">💬 Enviar</button>
+                    </div>
+                    <div class="progress-bar-bg">
+                        <div class="progress-bar-fill" style="width:${progress}%;"></div>
+                    </div>
+                </div>
+            `;
+        });
+        list.innerHTML = html;
+    }
+
+    window.saveCoachMessage = function(index) {
+        const input = document.getElementById(`coachMsgInput_${index}`);
+        if (!input) return;
+        const msg = input.value.trim();
+        if (coachData.players[index]) {
+            coachData.players[index].coachMessage = msg;
+            saveCoachData();
+            if (playerData.name && playerData.name === coachData.players[index].playerName) {
+                playerData.coachMessage = msg;
+                savePlayerData();
+                renderDay(currentDay);
+            }
+            alert('✅ Mensaje guardado para ' + coachData.players[index].playerName);
+        }
+    };
+
+    // ============================================================
+    // 13. EXPORTAR / IMPORTAR
+    // ============================================================
+    document.getElementById('exportBtn').addEventListener('click', () => {
+        const name = document.getElementById('playerNameInput').value.trim() || 'Jugador';
+        playerData.name = name;
+        const coachPlayer = coachData.players.find(p => p.playerName === name);
+        if (coachPlayer && coachPlayer.coachMessage) {
+            playerData.coachMessage = coachPlayer.coachMessage;
+        }
+        savePlayerData();
+        const json = JSON.stringify(playerData, null, 2);
+        const blob = new Blob([json], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `progreso_${name}_${getToday()}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+    });
+
+    document.getElementById('importOwnBtn').addEventListener('click', () => {
+        document.getElementById('ownFileInput').click();
+    });
+
+    document.getElementById('ownFileInput').addEventListener('change', function(e) {
+        const file = this.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            try {
+                const data = JSON.parse(ev.target.result);
+                if (data.logs && Array.isArray(data.logs)) {
+                    if (!data.diagnostic) data.diagnostic = { done: false, level: 'beginner', rounds: 0,
+                        heartRate: 0, borgScale: 6, date: '' };
+                    if (!data.diagnostic.heartRate) data.diagnostic.heartRate = 0;
+                    if (!data.diagnostic.borgScale) data.diagnostic.borgScale = 6;
+                    if (!data.notes) data.notes = {};
+                    if (!data.coachMessage) data.coachMessage = '';
+                    playerData = data;
+                    if (playerData.name) document.getElementById('playerNameInput').value = playerData.name;
+                    savePlayerData();
+                    updateTabsState();
+                    renderDay(currentDay);
+                    alert('✅ Progreso importado correctamente.');
+                } else {
+                    alert('❌ Archivo inválido.');
+                }
+            } catch (e) {
+                alert('❌ Error al leer el archivo.');
+            }
+        };
+        reader.readAsText(file);
+        this.value = '';
+    });
+
+    // ============================================================
+    // 14. IMPORTAR COACH
+    // ============================================================
+    document.getElementById('importCoachBtn').addEventListener('click', () => {
+        document.getElementById('fileInput').click();
+    });
+
+    document.getElementById('fileInput').addEventListener('change', function(e) {
+        const files = this.files;
+        if (!files.length) return;
+        let count = 0;
+        Array.from(files).forEach(file => {
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                try {
+                    const data = JSON.parse(ev.target.result);
+                    if (data.logs && Array.isArray(data.logs) && data.name) {
+                        const existingIndex = coachData.players.findIndex(p => p.playerName === data.name);
+                        const playerEntry = {
+                            playerName: data.name,
+                            logs: data.logs,
+                            diagnostic: data.diagnostic || { done: false, level: 'beginner', rounds: 0,
+                                heartRate: 0, borgScale: 6, date: '' },
+                            notes: data.notes || {},
+                            coachMessage: data.coachMessage || ''
+                        };
+                        if (!playerEntry.diagnostic.heartRate) playerEntry.diagnostic.heartRate = 0;
+                        if (!playerEntry.diagnostic.borgScale) playerEntry.diagnostic.borgScale = 6;
+
+                        if (existingIndex !== -1) {
+                            const existingLogs = coachData.players[existingIndex].logs;
+                            const newLogs = data.logs.filter(l => !existingLogs.some(el => el.dayId === l.dayId &&
+                                el.date === l.date));
+                            if (newLogs.length > 0) {
+                                coachData.players[existingIndex].logs = [...existingLogs, ...newLogs];
+                            }
+                            if (data.diagnostic && data.diagnostic.done) {
+                                coachData.players[existingIndex].diagnostic = data.diagnostic;
+                            }
+                            if (data.notes && typeof data.notes === 'object') {
+                                Object.keys(data.notes).forEach(key => {
+                                    if (data.notes[key] && data.notes[key].trim()) {
+                                        coachData.players[existingIndex].notes = coachData.players[existingIndex].notes || {};
+                                        coachData.players[existingIndex].notes[key] = data.notes[key];
+                                    }
+                                });
+                            }
+                            if (!coachData.players[existingIndex].coachMessage && data.coachMessage) {
+                                coachData.players[existingIndex].coachMessage = data.coachMessage;
+                            }
+                        } else {
+                            coachData.players.push(playerEntry);
+                        }
+                        count++;
+                        saveCoachData();
+                        if (isCoachMode) renderCoachDashboard();
+                    }
+                } catch (e) { /* ignorar */ }
+            };
+            reader.readAsText(file);
+        });
+        this.value = '';
+        setTimeout(() => {
+            alert(`📥 Se importaron ${count} jugadores correctamente.`);
+        }, 300);
+    });
+
+    // ============================================================
+    // 15. LIMPIAR COACH / MUTEAR / GUARDAR NOMBRE
+    // ============================================================
+    document.getElementById('clearCoachBtn').addEventListener('click', () => {
+        if (confirm('¿Eliminar todos los datos del entrenador?')) {
+            coachData.players = [];
+            saveCoachData();
+            renderCoachDashboard();
+        }
+    });
+
+    document.getElementById('muteBtn').addEventListener('click', function() {
+        isMuted = !isMuted;
+        this.textContent = isMuted ? '🔇' : '🔊';
+    });
+
+    document.getElementById('playerNameInput').addEventListener('change', function() {
+        playerData.name = this.value.trim() || 'Jugador';
+        savePlayerData();
+        const coachPlayer = coachData.players.find(p => p.playerName === playerData.name);
+        if (coachPlayer && coachPlayer.coachMessage) {
+            playerData.coachMessage = coachPlayer.coachMessage;
+            savePlayerData();
+            renderDay(currentDay);
+        }
+    });
+
+    // ============================================================
+    // 16. INICIALIZAR
+    // ============================================================
+    loadPlayerData();
+    loadCoachData();
+    if (!playerData.name) document.getElementById('playerNameInput').value = '';
+    else document.getElementById('playerNameInput').value = playerData.name;
+
+    if (playerData.coachMessage && playerData.coachMessage.trim() !== '') {
+        document.getElementById('coachMessageContainer').style.display = 'block';
+        document.getElementById('coachMessageText').textContent = playerData.coachMessage;
+    }
+
+    renderDay(0);
+    resetTimer();
+    updateTabsState();
+
+    if (playerData.diagnostic && playerData.diagnostic.done) {
+        const levelDisplay = document.getElementById('levelDisplay');
+        const levelNames = { beginner: 'Principiante', intermediate: 'Intermedio', advanced: 'Avanzado' };
+        levelDisplay.textContent = `🎯 Nivel: ${levelNames[playerData.diagnostic.level]}`;
+        levelDisplay.className = `level-badge ${playerData.diagnostic.level}`;
+        levelDisplay.style.display = 'inline-block';
+        const weekIdx = getCurrentWeekIndex();
+        if (weekIdx > 0) document.getElementById('weekFocus').textContent = WEEK_NAMES[weekIdx];
+    }
+
+    console.log('🏓 App lista. Imagen del Burpee agregada al diagnóstico.');
+</script>
+</body>
+</html>
